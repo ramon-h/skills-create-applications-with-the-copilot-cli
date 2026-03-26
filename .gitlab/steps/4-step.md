@@ -1,53 +1,57 @@
-## Step 4: Create, Review, and Merge Your Merge Request
+## Step 3: Expand Calculator Functionality
 
-Duck is ready to finalize the development work by creating a merge request, linking it to both issues, getting a review from Copilot, and merging the changes—all from the command line with Copilot CLI.
+Duck wants to expand the calculator with additional operations by creating a new issue and working with Copilot CLI to implement the enhancements.
 
-### 📖 Theory: Merge Requests and Code Review with Copilot CLI
+### 📖 Theory: Iterative Development with Copilot CLI
 
-#### Understanding Merge Requests (MRs)
+#### Maintaining Momentum with Copilot CLI
 
-Merge requests are the standard way to propose changes in collaborative development on GitLab:
+The standalone Copilot CLI helps maintain development momentum by:
 
-- They allow team members to review code before merging
-- They maintain a history of changes and decisions
-- They can be linked to issues for better project tracking
-- They enable automated testing and validation through GitLab CI/CD
+- Quickly generating code for new features using the latest AI models
+- Suggesting best practices and patterns
+- Helping debug and test new functionality
+- Reducing context switching by keeping you in the terminal
+- Handling long-running shell commands more efficiently
+- Supporting improved automation with the headless `-p` mode
 
-#### Connecting MRs to Issues
+#### Delegating Larger Tasks
 
-Linking merge requests to issues helps with project management:
+For more complex tasks, you can use the `/delegate` command to assign work to the Copilot coding agent:
 
-- GitLab closes issues automatically when the MR is merged (using `Closes #N` in the MR description)
-- Provides traceability between work items and code changes
-- Helps track progress through the development lifecycle
-- Improves team communication about what's being built
+> ```bash
+> copilot
+> ```
+>
+> ```text
+> /delegate Add modulo, exponentiation, and square root functions to calculator.js with proper error handling
+> ```
 
-#### Code Review with AI Assistance
+Copilot coding agent will:
 
-GitHub Copilot can act as a reviewer to:
+1. Create a new branch automatically
+2. Open a draft pull request
+3. Work on the task autonomously
+4. Stream output to your terminal
+5. Request your review when complete
 
-- Suggest improvements to code quality
-- Identify potential bugs or edge cases
-- Recommend best practices and design patterns
-- Provide constructive feedback on implementation
+> [!NOTE]
+> Using the `/delegate` command to leverage the Copilot Coding Agent (CCA) will consume premium requests from your GitHub Copilot subscription. Copilot CLI can be also used with regular models, which don't use premium requests.
 
-The Copilot CLI enables you to:
+#### Testing and Improvement Workflows
 
-- Create merge requests directly from the terminal using `glab`
-- Request reviews from team members
-- Merge changes without leaving the CLI
-- Automate the entire workflow for faster iteration
+As you add features, Copilot CLI can help you:
 
-#### References
-
-- [Creating Merge Requests with glab CLI](https://gitlab.com/gitlab-org/cli/-/blob/main/docs/source/mr/create.md)
-- [Linking Issues and MRs in GitLab](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [GitHub Copilot as a Code Reviewer](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/request-a-code-review/use-code-review)
+- Generate test cases for new operations
+- Suggest edge cases to consider
+- Create documentation
+- Refactor code for better maintainability
+- Save and share your development sessions using `/share`
 
 > [!IMPORTANT]
-> If you have restarted your terminal you may need to run `copilot --allow-all` and then authenticate with GitLab again by running `!glab auth login` from within the Copilot CLI session.
+> If you have restarted your terminal you may need to run `copilot --allow-all --enable-all-github-mcp-tools` and then authenticate with GitLab again by running `!glab auth login` from within the Copilot CLI session.
 
-### ⌨️ Activity: Complete Your Merge Request Workflow
+### ⌨️ Activity: Add More Operations to the Calculator
 
 1. Start an interactive Copilot CLI session (if not already in a session):
 
@@ -57,67 +61,82 @@ The Copilot CLI enables you to:
    > copilot --allow-all --enable-all-github-mcp-tools
    > ```
 
-2. Create a merge request for your changes:
+1. Ask Copilot CLI to help you create another issue for expanding the calculator using `glab`:
 
    > ![Static Badge](https://img.shields.io/badge/CLI-Prompt-text?style=flat-square&logo=github-copilot&labelColor=8250df&color=fbefff)
    >
    > ```prompt
-   > Create a GitLab merge request from the current branch with the title
-   > "Add calculator enhancements" and a description that includes the main changes:
-   > basic calculator operations and expanded functionality with modulo, power, and square root.
-   > Use glab to create the merge request targeting the main branch.
-   > List the MR link when it is completely created.
+   > Create a GitLab issue for a Node.js CLI calculator app using the feature_request.md template 
+   > as the markdown format.
+   > I want to request a feature to add more operations including 
+   > - modulo
+   > - exponentiation (power)
+   > - square root
+   > Create the issue directly for the current owner and repository in this session on gitlab.com
+   > using the `glab` CLI commands.
+   > List the issue link when complete
    > ```
 
-3. Attach the merge request to both issues you created earlier so they close automatically when merged:
+1. Work with Copilot CLI to implement the new operations:
 
    > ![Static Badge](https://img.shields.io/badge/CLI-Prompt-text?style=flat-square&logo=github-copilot&labelColor=8250df&color=fbefff)
    >
    > ```prompt
-   > Update the merge request description to include "Closes #N" references for both
-   > the "Create a calculator" and "Add more operations" issues so they close automatically when merged.
-   > Use glab to update the MR description.
+   > Add these functions to my existing calculator.js based on latest issue created:
+   > 1. modulo(a, b) - returns the remainder of a divided by b
+   > 2. power(base, exponent) - returns base raised to the exponent
+   > 3. squareRoot(n) - returns the square root of n with error handling for negative numbers
    > ```
 
-4. Merge the merge request:
+   1. Optional: use headless mode:
+
+      > ![Static Badge](https://img.shields.io/badge/Terminal-text?logo=gnometerminal&labelColor=0969da&color=ddf4ff)
+      >
+      > ```bash
+      > copilot -p "Add these functions to my existing calculator.js based on latest issue created:
+      > 1. modulo(a, b) - returns the remainder of a divided by b
+      > 2. power(base, exponent) - returns base raised to the exponent
+      > 3. squareRoot(n) - returns the square root of n with error handling for negative numbers"
+      > ```
+
+1. Test your new functions and add tests:
 
    > ![Static Badge](https://img.shields.io/badge/CLI-Prompt-text?style=flat-square&logo=github-copilot&labelColor=8250df&color=fbefff)
    >
    > ```prompt
-   > Merge the merge request and confirm the attached issues are closed.
-   > Use glab mr merge to complete the merge.
+   > Add tests for the new calculator operations: 
+   > - Expand tests based on the following example:
+   >   - @images/calc-extended-operations.png
+   > - Add new tests for the new operations to the existing src/tests/calculator.test.js file
+   > - Use a popular Node.js testing framework if one isn't installed
+   > - Make sure to include edge case tests like square root of negative numbers
+   > - Make sure all tests run and pass
    > ```
 
-> [!NOTE]
-> When you merge an MR that contains "Closes #N" in its description,
-> GitLab automatically closes those issues. Using squash commits keeps your
-> main branch history clean.
-
-5. Verify that both issues are now closed:
+1. Commit your changes:
 
    > ![Static Badge](https://img.shields.io/badge/CLI-Prompt-text?style=flat-square&logo=github-copilot&labelColor=8250df&color=fbefff)
    >
    > ```prompt
-   > List the closed issues in the repository to confirm both the "Create a calculator" 
-   > and "Add more operations" issues are now closed.
-   > Use glab issue list --closed to verify.
+   > Add all calculator and test files to git.
+   > Commit with message "Implemented additional calculator operations and tests: 
+   > modulo, power, square root" 
+   > Push the changes
    > ```
 
-6. The GitLab CI pipeline will run automatically on the merge to main. Watch **CI/CD → Pipelines** for the Step 4 pipeline to complete, then check the exercise issue comments for your final review and completion message.
+1. The GitLab CI pipeline will automatically validate your work. Watch **CI/CD → Pipelines** for the Step 3 pipeline to complete, then check your exercise issue comments for feedback.
 
 > [!TIP]
-> Use `/share gist` in your Copilot CLI session to save your exercise session
-> as a gist for documentation and future reference!
+> Use `/share gist` in your Copilot CLI session to save your exercise session as a GitHub gist for future reference!
 
 <details>
 <summary>Having trouble? 🤷</summary><br/>
 
-- Make sure you've committed and pushed all your changes before creating the MR
-- Verify your GitLab authentication with `!glab auth status` in Copilot CLI
-- If the MR creation fails, check that you're on a branch different from main
-- To manually link an issue, edit the MR description to include `Closes #<issue-number>`
-- You can view MR details with `!glab mr view` or `!glab mr list` to see your MRs
-- For issues that don't close automatically, link them manually via the GitLab web UI
-- Use `!glab mr merge --squash` to merge with a clean history
+- Make sure your issue title includes "Calculator" or "Operations"
+- The calculator.js file should export functions that can be required/imported
+- You can test operations manually using Node.js REPL: `node` then type your code
+- For square root of negative numbers, consider returning `NaN` or throwing an error
+- Remember to commit and push any code changes you make
+- Use `copilot --help` to see all available command options
 
 </details>

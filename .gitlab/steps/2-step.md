@@ -1,50 +1,162 @@
-## Step 2: Work on the Calculator Issue with Copilot CLI
+## Step 2: Set Up Your Development Environment with Vconfig CLI
 
-With the issue created, Duck works with the standalone Copilot CLI interactively to start building the calculator application.
+With Copilot CLI installed, Duck is ready to set up the full Vista development environment. Vista's `vconfig` CLI automates this entire process — installing Skills, MCP servers, and everything else needed to be productive from day one.
 
-### 📖 Theory: Collaborative Development with Copilot CLI
+### 📖 Theory: Vista's Unified Development Environment
 
-#### Interactive Development with Copilot CLI
+#### What is Vconfig?
 
-The standalone Copilot CLI (`copilot` command) provides a rich interactive experience for development:
+`vconfig` is Vista's single source of truth for development environment setup. It ensures every developer runs the same optimized stack tailored to Vista's needs, eliminating tedious manual configuration.
 
-- Start a session by simply running `copilot` in your terminal
-- Have natural conversations about your code and get intelligent suggestions
-- Generate boilerplate code based on your requirements
-- Use the latest AI models for cutting-edge responses
-- `/share [file|gist] [path]` - Share session to markdown file or GitHub gist
+> _"`vconfig` aims to serve as the nexus for Vista's evolving development ecosystem, integrating development tooling and emerging AI capabilities into a unified experience."_
 
-#### Custom Agents
+Key things `vconfig` manages for you:
 
-Copilot CLI supports custom agents that you can define in your repository:
+- **Vista Skills** — Vista-specific Copilot instructions and context, installed into `~/copilot` for use by Copilot CLI and VS Code
+- **MCP Servers** — Model Context Protocol servers that extend what AI tools can do (like the GitLab MCP, which lets Copilot CLI interact with GitLab on your behalf)
+- **Updates** — `vconfig` keeps itself and your tooling fresh automatically
 
-- Create agent profiles in `.gitlab/agents/` directory
-- Encode specialized prompts, tool selections, and workflows
-- Invoke agents using `/agent <name>` command
-- Great for documentation, infrastructure, security, or domain-specific tasks
+#### Why does this matter?
 
-#### Delegating Tasks
+Once you install the **GitLab MCP** via `vconfig`, Copilot CLI can interact with GitLab directly — creating issues, managing projects, creating access tokens — all without leaving the terminal. You'll use this in Activity 5 to set up the `GITLAB_TOKEN` CI/CD variable needed for the automated exercise feedback.
 
-When you have larger tasks, you can delegate them to Copilot coding agent:
+#### Key Commands
 
-- Use `/delegate TASK-DESCRIPTION` to assign work
-- Copilot creates a new branch and draft pull request
-- The coding agent works autonomously in the background
-- Review the changes when complete
+| Command | Purpose |
+|---------|---------|
+| `vconfig init` | Configuration wizard — **run this first** |
+| `vconfig version` | Show installed version |
+| `vconfig update` | Update vconfig itself |
+| `vconfig devenv skills install` | Install Vista Skills into `~/copilot` |
+| `vconfig devenv skills update` | Update Vista Skills |
+| `vconfig devenv mcp install` | Install MCP servers (including GitLab MCP) |
 
 > [!NOTE]
-> References:
->
-> - [Using GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/use-copilot-cli)
-> - [Custom agents in Copilot CLI](https://github.blog/changelog/2025-10-28-github-copilot-cli-use-custom-agents-and-delegate-to-copilot-coding-agent/)
-> - [About custom agents](https://docs.github.com/en/copilot/concepts/agents/coding-agent/about-custom-agents)
+> Every command supports a `--plain` flag for a simple terminal experience instead of the interactive TUI.
+> All commands have a `--help` flag for detailed documentation.
 
-> [!IMPORTANT]
-> If you have restarted your terminal you may need to run `copilot --allow-all --enable-all-github-mcp-tools` and then authenticate with GitLab again by running `!glab auth login` in the Copilot CLI.
+#### References
 
-### ⌨️ Activity: Create a New Branch for the Calculator App
+- [Vconfig CLI Documentation](https://vistaprint.atlassian.net/wiki/spaces/NTEO/pages/5420745611/Vconfig+CLI)
+- [Getting Started with GitHub Copilot at Vista](https://vistaprint.atlassian.net/wiki/spaces/NTEO/pages/3529016399)
+- [Vconfig Releases (Slack)](https://vistaprint.slack.com/archives/C0ADGRGPMHA)
 
-1. Start a new interactive Copilot CLI session (close the previous session with `/exit`):
+---
+
+### Prerequisites
+
+Before installing `vconfig`, you need a **GitLab Personal Access Token** with at minimum `read_api` scope. This is needed only for the initial install.
+
+1. Go to [GitLab Personal Access Tokens](https://gitlab.com/-/user_settings/personal_access_tokens)
+2. Create a token with the scope: `read_api` (and optionally `read_repository`, `read_registry`, `read_user`)
+3. Copy the token — you'll use it in Activity 1
+
+> [!NOTE]
+> This is a **personal token** used once for the vconfig install. In Activity 5, you'll use Copilot CLI + the GitLab MCP to create a separate **project access token** (`GITLAB_TOKEN`) for the CI/CD pipeline — no browser required for that step.
+
+---
+
+### ⌨️ Activity 1: Install Vconfig
+
+1. Set your GitLab token and run the autoinstaller:
+
+   > ![Static Badge](https://img.shields.io/badge/Terminal-text?logo=gnometerminal&labelColor=0969da&color=ddf4ff)
+   >
+   > ```bash
+   > export VCONFIG_GITLAB_TOKEN="your-token-here"
+   > curl -fsSL -H "PRIVATE-TOKEN: $VCONFIG_GITLAB_TOKEN" \
+   >   "https://gitlab.com/api/v4/projects/76843552/repository/files/scripts%2Finstall.sh/raw?ref=main" | bash
+   > ```
+
+2. Verify the installation:
+
+   > ![Static Badge](https://img.shields.io/badge/Terminal-text?logo=gnometerminal&labelColor=0969da&color=ddf4ff)
+   >
+   > ```bash
+   > vconfig version
+   > ```
+
+> [!TIP]
+> Once installed, vconfig keeps itself up to date. Run `vconfig update` at any time to check for new releases.
+
+---
+
+### ⌨️ Activity 2: Run the Configuration Wizard
+
+`vconfig init` must be run before any other commands. It sets up your GitLab token and saves configuration to `~/.vista/vconfig/settings.yaml`.
+
+1. Launch the configuration wizard:
+
+   > ![Static Badge](https://img.shields.io/badge/Terminal-text?logo=gnometerminal&labelColor=0969da&color=ddf4ff)
+   >
+   > ```bash
+   > vconfig init
+   > ```
+
+2. Follow the prompts to enter your GitLab Personal Access Token and complete the setup.
+
+> [!NOTE]
+> After `vconfig init`, your token is securely saved. You won't need to set `VCONFIG_GITLAB_TOKEN` as an environment variable for future commands.
+
+> [!TIP]
+> If any subsequent `vconfig` command fails with `❌ Configuration Not Found` or `GitLab token not configured`, re-run `vconfig init`.
+
+---
+
+### ⌨️ Activity 3: Install Vista Skills
+
+Vista Skills are Copilot instructions and context files tailored to Vista's engineering practices. Installing them makes Copilot CLI (and VS Code) aware of Vista-specific patterns and conventions.
+
+1. Install Vista Skills:
+
+   > ![Static Badge](https://img.shields.io/badge/Terminal-text?logo=gnometerminal&labelColor=0969da&color=ddf4ff)
+   >
+   > ```bash
+   > vconfig devenv skills install
+   > ```
+
+   This installs skills into `~/copilot`, where both Copilot CLI and VS Code can use them.
+
+2. To update skills in the future:
+
+   > ![Static Badge](https://img.shields.io/badge/Terminal-text?logo=gnometerminal&labelColor=0969da&color=ddf4ff)
+   >
+   > ```bash
+   > vconfig devenv skills update
+   > ```
+
+> [!NOTE]
+> Skills are installed at the **user level** in `~/copilot`. They apply across all your projects.
+
+---
+
+### ⌨️ Activity 4: Install MCP Servers
+
+MCP (Model Context Protocol) servers extend what AI tools can do by giving them access to external systems. `vconfig devenv mcp install` installs MCP servers from Vista's registry, including the **GitLab MCP** which enables Copilot CLI to interact with GitLab directly.
+
+1. Install MCP servers:
+
+   > ![Static Badge](https://img.shields.io/badge/Terminal-text?logo=gnometerminal&labelColor=0969da&color=ddf4ff)
+   >
+   > ```bash
+   > vconfig devenv mcp install
+   > ```
+
+   Follow any prompts for authentication or activation. `vconfig` auto-detects your tools (VS Code, Copilot CLI, etc.) and installs MCPs accordingly.
+
+> [!NOTE]
+> Some MCPs may require additional authentication during or after installation. Follow the prompts as they appear.
+
+> [!TIP]
+> After MCP installation, **restart Copilot CLI** to pick up the newly installed MCP servers.
+
+---
+
+### ⌨️ Activity 5: Create GITLAB_TOKEN Using Copilot CLI + GitLab MCP
+
+Now that the GitLab MCP is installed, Copilot CLI can interact with GitLab on your behalf. Use it to create the project access token needed for the exercise pipeline — no browser required.
+
+1. Start a new Copilot CLI session with all tools enabled:
 
    > ![Static Badge](https://img.shields.io/badge/Terminal-text?logo=gnometerminal&labelColor=0969da&color=ddf4ff)
    >
@@ -52,115 +164,49 @@ When you have larger tasks, you can delegate them to Copilot coding agent:
    > copilot --allow-all --enable-all-github-mcp-tools
    > ```
 
-> [!NOTE]
-> The `--allow-all` option enables all permissions at once: it is equivalent to `--allow-all-tools`, `--allow-all-paths`, and `--allow-all-urls`. Use with caution, as it grants the CLI full access and automation capabilities.
-
-2. Create and push a new branch called `create-calc-app`:
+2. Ask Copilot CLI to create a project access token and set it as a CI/CD variable:
 
    > ![Static Badge](https://img.shields.io/badge/CLI-Prompt-text?style=flat-square&logo=github-copilot&labelColor=8250df&color=fbefff)
    >
    > ```prompt
-   > Create and push a new branch called 'create-calc-app'
+   > Using the GitLab MCP tools, do the following for the current project on GitLab:
+   > 1. Create a project access token named 'exercise-bot' with Reporter role and 'api' scope,
+   >    set to expire in 90 days.
+   > 2. Add the token as a CI/CD variable named GITLAB_TOKEN with these settings:
+   >    - masked: true (so it doesn't appear in logs)
+   >    - protected: false (so it works on all branches)
+   > Confirm when both steps are complete and show the variable name.
    > ```
+
+3. Once Copilot confirms the `GITLAB_TOKEN` variable is set, trigger the Step 2 validation pipeline:
+
+   > ![Static Badge](https://img.shields.io/badge/CLI-Prompt-text?style=flat-square&logo=github-copilot&labelColor=8250df&color=fbefff)
+   >
+   > ```prompt
+   > Trigger the GitLab CI pipeline manually for the main branch so Step 2 validation runs.
+   > Use glab to run the pipeline on the main branch.
+   > ```
+
+   Or run it directly:
+
+   > ![Static Badge](https://img.shields.io/badge/Terminal-text?logo=gnometerminal&labelColor=0969da&color=ddf4ff)
+   >
+   > ```bash
+   > glab ci run --branch main
+   > ```
+
+4. Watch **CI/CD → Pipelines** in your GitLab project for the Step 2 pipeline to complete. Check your exercise issue for feedback and the next step instructions.
+
+> [!NOTE]
+> Copilot CLI may ask for permission to use the GitLab MCP tools. Respond **yes** (or **"Yes, and approve for the rest of the session"**) to allow the operation.
 
 <details>
 <summary>Having trouble? 🤷</summary><br/>
 
-Use the `!` command in Copilot CLI to execute shell commands directly from your chat session:
-
- ```prompt
- !git checkout -b create-calc-app && git push -u origin create-calc-app
- ```
-
- Verify the current branch afterward:
-
- ```prompt
- !git branch --show-current
- ```
-</details>
-
-### ⌨️ Activity: Generate Calculator Code with Copilot CLI based on an Image
-
-1. Ask Copilot CLI to help you create the calculator functions based on the image and the GitLab issue created earlier:
-
-   > ![Static Badge](https://img.shields.io/badge/CLI-Prompt-text?style=flat-square&logo=github-copilot&labelColor=8250df&color=fbefff)
-   >
-   > ```prompt
-   > @images/js-calculator.png help me create a Node.js CLI calculator app 
-   > based only on the four basic math operations in this image and outlined
-   > in the latest issue in this owner/repository.
-   > Create the code and put it in the 'src' directory.
-   > Make sure the calculator is commented with the operations it supports.
-   > ```
-
-   1. Optional: use headless mode with a prompt:
-
-      > ![Static Badge](https://img.shields.io/badge/Terminal-text?logo=gnometerminal&labelColor=0969da&color=ddf4ff)
-      >
-      > ```bash
-      > copilot -p "@images/js-calculator.png help me create a Node.js CLI calculator app 
-      > based only on the four basic math operations in this image and outlined
-      > in the latest issue in this owner/repository.
-      > Create the code and put it in the 'src' directory.
-      > Make sure the calculator is commented with the operations it supports."
-      > ```
-
-> [!NOTE]
-> While this example uses an image of a web JavaScript calculator, it demonstrates how you can use files (including images) with the Copilot CLI to provide context for your requests.
-
-2. Run and test your calculator functions by asking Copilot CLI:
-
-   > ![Static Badge](https://img.shields.io/badge/CLI-Prompt-text?style=flat-square&logo=github-copilot&labelColor=8250df&color=fbefff)
-   >
-   > ```prompt
-   > Run and test the calculator functions with some example operations 
-   > shown in the image @images/calc-basic-operations.png.
-   > ```
-
-3. Ask Copilot CLI to create comprehensive tests for the calculator functions:
-
-   > ![Static Badge](https://img.shields.io/badge/CLI-Prompt-text?style=flat-square&logo=github-copilot&labelColor=8250df&color=fbefff)
-   >
-   > ```prompt
-   > Create comprehensive unit tests for all the calculator functions:
-   > - Expand tests based on the following example:
-   >   - @images/calc-basic-operations.png
-   > - Add these tests to a src/tests/calculator.test.js file
-   > - Use a popular Node.js testing framework if one isn't installed
-   > - addition, subtraction, multiplication, and division
-   > - test edge cases like division by zero
-   > - Make sure all tests run and pass
-   > ```
-
-> [!NOTE]
-> Hit ctrl+o to see output of the passed tests that Copilot CLI ran for you!
-  
-4. Once satisfied with the code, commit your changes through Copilot CLI:
-
-   > ![Static Badge](https://img.shields.io/badge/CLI-Prompt-text?style=flat-square&logo=github-copilot&labelColor=8250df&color=fbefff)
-   >
-   > ```prompt
-   > Add all calculator and test files to git.
-   > Commit with message "Implement basic calculator operations and tests: 
-   > addition, subtraction, multiplication, division"
-   > Push the changes
-   > ```
-
-5. The GitLab CI pipeline will automatically validate your work once you push. Watch for the pipeline to complete in **CI/CD → Pipelines**, then check the comments on your exercise issue for feedback and the next step.
-
-> [!TIP]
-> You can paste or drag-and-drop images into Copilot CLI to provide visual context for your questions!
-
-> [!NOTE]
-> Pushing `src/*.js` changes to the `create-calc-app` branch triggers the Step 2 validation pipeline automatically!
-
-<details>
-<summary>Having trouble? 🤷</summary><br/>
-
-- Make sure you're in the repository directory when running commands
-- The `copilot` command requires Node.js 22+ to be installed
-- If authentication fails, run `!glab auth login` from within the Copilot CLI session
-- You can also edit the calculator.js file manually based on Copilot's suggestions
-- Remember to export your functions using `module.exports`
+- If `vconfig init` fails, make sure your GitLab PAT has `read_api` scope
+- If `vconfig devenv mcp install` fails, check that VS Code is installed and accessible via `code` in your terminal (on Mac this is a manual setup step — open VS Code, press `Cmd+Shift+P`, type "shell command", and select "Install 'code' command in PATH")
+- If Copilot CLI doesn't have GitLab MCP tools after install, restart Copilot CLI
+- If the `GITLAB_TOKEN` CI variable creation fails via Copilot CLI, you can create it manually: Project → Settings → Access Tokens → create token with Reporter role + `api` scope, then Project → Settings → CI/CD → Variables → add `GITLAB_TOKEN`
+- Use `vconfig --help` or `vconfig <command> --help` for detailed command documentation
 
 </details>

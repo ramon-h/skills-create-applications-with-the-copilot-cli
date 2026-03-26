@@ -1,59 +1,50 @@
-## Step 3: Expand Calculator Functionality
+## Step 2: Work on the Calculator Issue with Copilot CLI
 
-Duck wants to expand the calculator with additional operations by creating a new issue and working with Copilot CLI to implement the enhancements.
+With the issue created, Duck works with the standalone Copilot CLI interactively to start building the calculator application.
 
-### 📖 Theory: Iterative Development with Copilot CLI
+### 📖 Theory: Collaborative Development with Copilot CLI
 
-#### Maintaining Momentum with Copilot CLI
+#### Interactive Development with Copilot CLI
 
-The standalone Copilot CLI helps maintain development momentum by:
+The standalone Copilot CLI (`copilot` command) provides a rich interactive experience for development:
 
-- Quickly generating code for new features using the latest AI models
-- Suggesting best practices and patterns
-- Helping debug and test new functionality
-- Reducing context switching by keeping you in the terminal
-- Handling long-running shell commands more efficiently
-- Supporting improved automation with the headless `-p` mode
+- Start a session by simply running `copilot` in your terminal
+- Have natural conversations about your code and get intelligent suggestions
+- Generate boilerplate code based on your requirements
+- Use the latest AI models for cutting-edge responses
+- `/share [file|gist] [path]` - Share session to markdown file or GitHub gist
 
-#### Delegating Larger Tasks
+#### Custom Agents
 
-For more complex tasks, you can use the `/delegate` command to assign work to the Copilot coding agent:
+Copilot CLI supports custom agents that you can define in your repository:
 
-> ```bash
-> copilot
-> ```
->
-> ```text
-> /delegate Add modulo, exponentiation, and square root functions to calculator.js with proper error handling
-> ```
+- Create agent profiles in `.gitlab/agents/` directory
+- Encode specialized prompts, tool selections, and workflows
+- Invoke agents using `/agent <name>` command
+- Great for documentation, infrastructure, security, or domain-specific tasks
 
-Copilot coding agent will:
+#### Delegating Tasks
 
-1. Create a new branch automatically
-2. Open a draft pull request
-3. Work on the task autonomously
-4. Stream output to your terminal
-5. Request your review when complete
+When you have larger tasks, you can delegate them to Copilot coding agent:
+
+- Use `/delegate TASK-DESCRIPTION` to assign work
+- Copilot creates a new branch and draft pull request
+- The coding agent works autonomously in the background
+- Review the changes when complete
 
 > [!NOTE]
-> Using the `/delegate` command to leverage the Copilot Coding Agent (CCA) will consume premium requests from your GitHub Copilot subscription. Copilot CLI can be also used with regular models, which don't use premium requests.
-
-#### Testing and Improvement Workflows
-
-As you add features, Copilot CLI can help you:
-
-- Generate test cases for new operations
-- Suggest edge cases to consider
-- Create documentation
-- Refactor code for better maintainability
-- Save and share your development sessions using `/share`
+> References:
+>
+> - [Using GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/use-copilot-cli)
+> - [Custom agents in Copilot CLI](https://github.blog/changelog/2025-10-28-github-copilot-cli-use-custom-agents-and-delegate-to-copilot-coding-agent/)
+> - [About custom agents](https://docs.github.com/en/copilot/concepts/agents/coding-agent/about-custom-agents)
 
 > [!IMPORTANT]
-> If you have restarted your terminal you may need to run `copilot --allow-all --enable-all-github-mcp-tools` and then authenticate with GitLab again by running `!glab auth login` from within the Copilot CLI session.
+> If you have restarted your terminal you may need to run `copilot --allow-all --enable-all-github-mcp-tools` and then authenticate with GitLab again by running `!glab auth login` in the Copilot CLI.
 
-### ⌨️ Activity: Add More Operations to the Calculator
+### ⌨️ Activity: Create a New Branch for the Calculator App
 
-1. Start an interactive Copilot CLI session (if not already in a session):
+1. Start a new interactive Copilot CLI session (close the previous session with `/exit`):
 
    > ![Static Badge](https://img.shields.io/badge/Terminal-text?logo=gnometerminal&labelColor=0969da&color=ddf4ff)
    >
@@ -61,82 +52,115 @@ As you add features, Copilot CLI can help you:
    > copilot --allow-all --enable-all-github-mcp-tools
    > ```
 
-1. Ask Copilot CLI to help you create another issue for expanding the calculator using `glab`:
+> [!NOTE]
+> The `--allow-all` option enables all permissions at once: it is equivalent to `--allow-all-tools`, `--allow-all-paths`, and `--allow-all-urls`. Use with caution, as it grants the CLI full access and automation capabilities.
+
+2. Create and push a new branch called `create-calc-app`:
 
    > ![Static Badge](https://img.shields.io/badge/CLI-Prompt-text?style=flat-square&logo=github-copilot&labelColor=8250df&color=fbefff)
    >
    > ```prompt
-   > Create a GitLab issue for a Node.js CLI calculator app using the feature_request.md template 
-   > as the markdown format.
-   > I want to request a feature to add more operations including 
-   > - modulo
-   > - exponentiation (power)
-   > - square root
-   > Create the issue directly for the current owner and repository in this session on gitlab.com
-   > using the `glab` CLI commands.
-   > List the issue link when complete
+   > Create and push a new branch called 'create-calc-app'
    > ```
 
-1. Work with Copilot CLI to implement the new operations:
+<details>
+<summary>Having trouble? 🤷</summary><br/>
+
+Use the `!` command in Copilot CLI to execute shell commands directly from your chat session:
+
+ ```prompt
+ !git checkout -b create-calc-app && git push -u origin create-calc-app
+ ```
+
+ Verify the current branch afterward:
+
+ ```prompt
+ !git branch --show-current
+ ```
+</details>
+
+### ⌨️ Activity: Generate Calculator Code with Copilot CLI based on an Image
+
+1. Ask Copilot CLI to help you create the calculator functions based on the image and the GitLab issue created earlier:
 
    > ![Static Badge](https://img.shields.io/badge/CLI-Prompt-text?style=flat-square&logo=github-copilot&labelColor=8250df&color=fbefff)
    >
    > ```prompt
-   > Add these functions to my existing calculator.js based on latest issue created:
-   > 1. modulo(a, b) - returns the remainder of a divided by b
-   > 2. power(base, exponent) - returns base raised to the exponent
-   > 3. squareRoot(n) - returns the square root of n with error handling for negative numbers
+   > @images/js-calculator.png help me create a Node.js CLI calculator app 
+   > based only on the four basic math operations in this image and outlined
+   > in the latest issue in this owner/repository.
+   > Create the code and put it in the 'src' directory.
+   > Make sure the calculator is commented with the operations it supports.
    > ```
 
-   1. Optional: use headless mode:
+   1. Optional: use headless mode with a prompt:
 
       > ![Static Badge](https://img.shields.io/badge/Terminal-text?logo=gnometerminal&labelColor=0969da&color=ddf4ff)
       >
       > ```bash
-      > copilot -p "Add these functions to my existing calculator.js based on latest issue created:
-      > 1. modulo(a, b) - returns the remainder of a divided by b
-      > 2. power(base, exponent) - returns base raised to the exponent
-      > 3. squareRoot(n) - returns the square root of n with error handling for negative numbers"
+      > copilot -p "@images/js-calculator.png help me create a Node.js CLI calculator app 
+      > based only on the four basic math operations in this image and outlined
+      > in the latest issue in this owner/repository.
+      > Create the code and put it in the 'src' directory.
+      > Make sure the calculator is commented with the operations it supports."
       > ```
 
-1. Test your new functions and add tests:
+> [!NOTE]
+> While this example uses an image of a web JavaScript calculator, it demonstrates how you can use files (including images) with the Copilot CLI to provide context for your requests.
+
+2. Run and test your calculator functions by asking Copilot CLI:
 
    > ![Static Badge](https://img.shields.io/badge/CLI-Prompt-text?style=flat-square&logo=github-copilot&labelColor=8250df&color=fbefff)
    >
    > ```prompt
-   > Add tests for the new calculator operations: 
+   > Run and test the calculator functions with some example operations 
+   > shown in the image @images/calc-basic-operations.png.
+   > ```
+
+3. Ask Copilot CLI to create comprehensive tests for the calculator functions:
+
+   > ![Static Badge](https://img.shields.io/badge/CLI-Prompt-text?style=flat-square&logo=github-copilot&labelColor=8250df&color=fbefff)
+   >
+   > ```prompt
+   > Create comprehensive unit tests for all the calculator functions:
    > - Expand tests based on the following example:
-   >   - @images/calc-extended-operations.png
-   > - Add new tests for the new operations to the existing src/tests/calculator.test.js file
+   >   - @images/calc-basic-operations.png
+   > - Add these tests to a src/tests/calculator.test.js file
    > - Use a popular Node.js testing framework if one isn't installed
-   > - Make sure to include edge case tests like square root of negative numbers
+   > - addition, subtraction, multiplication, and division
+   > - test edge cases like division by zero
    > - Make sure all tests run and pass
    > ```
 
-1. Commit your changes:
+> [!NOTE]
+> Hit ctrl+o to see output of the passed tests that Copilot CLI ran for you!
+  
+4. Once satisfied with the code, commit your changes through Copilot CLI:
 
    > ![Static Badge](https://img.shields.io/badge/CLI-Prompt-text?style=flat-square&logo=github-copilot&labelColor=8250df&color=fbefff)
    >
    > ```prompt
    > Add all calculator and test files to git.
-   > Commit with message "Implemented additional calculator operations and tests: 
-   > modulo, power, square root" 
+   > Commit with message "Implement basic calculator operations and tests: 
+   > addition, subtraction, multiplication, division"
    > Push the changes
    > ```
 
-1. The GitLab CI pipeline will automatically validate your work. Watch **CI/CD → Pipelines** for the Step 3 pipeline to complete, then check your exercise issue comments for feedback.
+5. The GitLab CI pipeline will automatically validate your work once you push. Watch for the pipeline to complete in **CI/CD → Pipelines**, then check the comments on your exercise issue for feedback and the next step.
 
 > [!TIP]
-> Use `/share gist` in your Copilot CLI session to save your exercise session as a GitHub gist for future reference!
+> You can paste or drag-and-drop images into Copilot CLI to provide visual context for your questions!
+
+> [!NOTE]
+> Pushing `src/*.js` changes to the `create-calc-app` branch triggers the Step 2 validation pipeline automatically!
 
 <details>
 <summary>Having trouble? 🤷</summary><br/>
 
-- Make sure your issue title includes "Calculator" or "Operations"
-- The calculator.js file should export functions that can be required/imported
-- You can test operations manually using Node.js REPL: `node` then type your code
-- For square root of negative numbers, consider returning `NaN` or throwing an error
-- Remember to commit and push any code changes you make
-- Use `copilot --help` to see all available command options
+- Make sure you're in the repository directory when running commands
+- The `copilot` command requires Node.js 22+ to be installed
+- If authentication fails, run `!glab auth login` from within the Copilot CLI session
+- You can also edit the calculator.js file manually based on Copilot's suggestions
+- Remember to export your functions using `module.exports`
 
 </details>

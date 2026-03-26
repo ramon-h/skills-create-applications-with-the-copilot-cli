@@ -1,0 +1,90 @@
+# Step 5 — Final Validation (Merge Request merged to main)
+# Triggered when a Merge Request targeting main is merged.
+# Validates that at least 3 issues exist, then posts the review/completion content.
+
+.step5-defaults: &step5-defaults
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache curl jq bash
+    - chmod +x .gitlab/ci/scripts/*.sh
+
+step5:find-exercise-issue:
+  <<: *step5-defaults
+  stage: step5-validate-pr
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - when: never
+  script:
+    - bash .gitlab/ci/scripts/find_exercise_issue.sh
+  artifacts:
+    reports:
+      dotenv: variables.env
+
+step5:check-issue-count:
+  <<: *step5-defaults
+  stage: step5-validate-pr
+  needs:
+    - job: step5:find-exercise-issue
+      artifacts: true
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - when: never
+  script:
+    - |
+      API_URL="${CI_API_V4_URL:-https://gitlab.com/api/v4}"
+      ISSUE_COUNT=$(curl -sf \
+        --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
+        "${API_URL}/projects/${CI_PROJECT_ID}/issues?state=all&per_page=1" \
+        | jq -r '. | length')
+
+      # Use the X-Total header for accurate count
+      ISSUE_COUNT=$(curl -sI \
+        --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
+        "${API_URL}/projects/${CI_PROJECT_ID}/issues?state=all&per_page=1" \
+        | grep -i "x-total:" | awk '{print $2}' | tr -d '\r')
+
+      echo "Total issues: ${ISSUE_COUNT}"
+      if [ "${ISSUE_COUNT:-0}" -ge 3 ]; then
+        echo "ISSUE_COUNT_PASSED=true"  >> check_results.env
+      else
+        echo "ISSUE_COUNT_PASSED=false" >> check_results.env
+      fi
+      echo "ISSUE_COUNT=${ISSUE_COUNT}" >> check_results.env
+  artifacts:
+    reports:
+      dotenv: check_results.env
+
+step5:post-review:
+  <<: *step5-defaults
+  stage: step5-validate-pr
+  needs:
+    - job: step5:find-exercise-issue
+      artifacts: true
+    - job: step5:check-issue-count
+      artifacts: true
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - when: never
+  variables:
+    REVIEW_FILE: ".gitlab/steps/x-review.md"
+  script:
+    - |
+      bash .gitlab/ci/scripts/post_step_results.sh "${ISSUE_IID}" "4" \
+        "At least 3 issues exist in repository (found: ${ISSUE_COUNT:-0})" "${ISSUE_COUNT_PASSED}"
+    - |
+      if [ "${ISSUE_COUNT_PASSED}" = "true" ]; then
+        bash .gitlab/ci/scripts/post_issue_comment.sh "${ISSUE_IID}" "${REVIEW_FILE}"
+
+        # Close the exercise issue now that it's complete
+        API_URL="${CI_API_V4_URL:-https://gitlab.com/api/v4}"
+        curl -sf \
+          --request PUT \
+          --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
+          --header "Content-Type: application/json" \
+          --data '{"state_event": "close"}' \
+          "${API_URL}/projects/${CI_PROJECT_ID}/issues/${ISSUE_IID}" > /dev/null
+        echo "Exercise issue #${ISSUE_IID} closed. 🎉"
+      fi

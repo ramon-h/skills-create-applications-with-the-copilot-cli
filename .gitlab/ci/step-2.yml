@@ -1,6 +1,7 @@
-# Step 2 — Validate Calculator Implementation
-# Triggered when the learner pushes to the create-calc-app branch with changes to src/*.js.
-# Validates that calculator.js contains comments/documentation for all four operations.
+# Step 2 — Validate Vconfig Setup
+# Triggered manually by the learner after completing the Vconfig activities
+# (vconfig init, devenv skills install, devenv mcp install, and GITLAB_TOKEN CI variable creation).
+# Validates that the GITLAB_TOKEN CI variable is set and functional.
 
 .step2-defaults: &step2-defaults
   image: alpine:latest
@@ -10,71 +11,74 @@
 
 step2:find-exercise-issue:
   <<: *step2-defaults
-  stage: step2-validate-calculator
+  stage: step2-validate-vconfig
   rules:
-    - if: $CI_COMMIT_BRANCH == "create-calc-app"
-      changes:
-        - src/*.js
+    - if: $CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "trigger"
+      when: always
+    - when: never
   script:
     - bash .gitlab/ci/scripts/find_exercise_issue.sh
   artifacts:
     reports:
       dotenv: variables.env
 
-step2:check-calculator-operations:
+step2:check-gitlab-token:
   <<: *step2-defaults
-  stage: step2-validate-calculator
+  stage: step2-validate-vconfig
   needs:
     - job: step2:find-exercise-issue
       artifacts: true
   rules:
-    - if: $CI_COMMIT_BRANCH == "create-calc-app"
-      changes:
-        - src/*.js
+    - if: $CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "trigger"
+      when: always
+    - when: never
   script:
     - |
-      CALC_FILE="src/calculator.js"
-      if [ ! -f "${CALC_FILE}" ]; then
-        echo "ERROR: ${CALC_FILE} not found"
-        echo "ADDITION_PASSED=false"   >> check_results.env
-        echo "SUBTRACTION_PASSED=false" >> check_results.env
-        echo "MULTIPLY_PASSED=false"   >> check_results.env
-        echo "DIVISION_PASSED=false"   >> check_results.env
+      API_URL="${CI_API_V4_URL:-https://gitlab.com/api/v4}"
+
+      if [ -z "${GITLAB_TOKEN:-}" ]; then
+        echo "GITLAB_TOKEN is not set as a CI/CD variable."
+        echo "TOKEN_PASSED=false" >> check_results.env
         exit 0
       fi
 
-      bash .gitlab/ci/scripts/check_keyphrase.sh "${CALC_FILE}" "addition"      && echo "ADDITION_PASSED=true"      >> check_results.env || echo "ADDITION_PASSED=false"      >> check_results.env
-      bash .gitlab/ci/scripts/check_keyphrase.sh "${CALC_FILE}" "subtraction"   && echo "SUBTRACTION_PASSED=true"   >> check_results.env || echo "SUBTRACTION_PASSED=false"   >> check_results.env
-      bash .gitlab/ci/scripts/check_keyphrase.sh "${CALC_FILE}" "multiplication" && echo "MULTIPLY_PASSED=true"      >> check_results.env || echo "MULTIPLY_PASSED=false"      >> check_results.env
-      bash .gitlab/ci/scripts/check_keyphrase.sh "${CALC_FILE}" "division"      && echo "DIVISION_PASSED=true"      >> check_results.env || echo "DIVISION_PASSED=false"      >> check_results.env
+      # Try an authenticated API call to verify the token is valid and has api scope
+      HTTP_STATUS=$(curl -sf -o /dev/null -w "%{http_code}" \
+        --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
+        "${API_URL}/projects/${CI_PROJECT_ID}")
+
+      echo "GitLab API authentication status: HTTP ${HTTP_STATUS}"
+
+      if [ "${HTTP_STATUS}" = "200" ]; then
+        echo "✅ GITLAB_TOKEN is set and authenticated successfully"
+        echo "TOKEN_PASSED=true" >> check_results.env
+      else
+        echo "❌ GITLAB_TOKEN authentication failed (HTTP ${HTTP_STATUS})"
+        echo "TOKEN_PASSED=false" >> check_results.env
+      fi
   artifacts:
     reports:
       dotenv: check_results.env
 
 step2:post-results:
   <<: *step2-defaults
-  stage: step2-validate-calculator
+  stage: step2-validate-vconfig
   needs:
     - job: step2:find-exercise-issue
       artifacts: true
-    - job: step2:check-calculator-operations
+    - job: step2:check-gitlab-token
       artifacts: true
   rules:
-    - if: $CI_COMMIT_BRANCH == "create-calc-app"
-      changes:
-        - src/*.js
+    - if: $CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "trigger"
       when: always
+    - when: never
   variables:
     STEP_3_FILE: ".gitlab/steps/3-step.md"
   script:
     - |
       bash .gitlab/ci/scripts/post_step_results.sh "${ISSUE_IID}" "2" \
-        "Calculator has 'addition' function"       "${ADDITION_PASSED}" \
-        "Calculator has 'subtraction' function"    "${SUBTRACTION_PASSED}" \
-        "Calculator has 'multiplication' function" "${MULTIPLY_PASSED}" \
-        "Calculator has 'division' function"       "${DIVISION_PASSED}"
+        "GITLAB_TOKEN CI variable is set and authenticated" "${TOKEN_PASSED}"
     - |
-      if [ "${ADDITION_PASSED}" = "true" ] && [ "${SUBTRACTION_PASSED}" = "true" ] && \
-         [ "${MULTIPLY_PASSED}" = "true" ] && [ "${DIVISION_PASSED}" = "true" ]; then
+      if [ "${TOKEN_PASSED}" = "true" ]; then
         bash .gitlab/ci/scripts/post_issue_comment.sh "${ISSUE_IID}" "${STEP_3_FILE}"
       fi
