@@ -31,6 +31,9 @@ export COPILOT_CUSTOM_INSTRUCTIONS_DIRS=.gitlab/instructions
 ## Starting the Exercise
 
 1. **Fork** this repository to your GitLab account
+   
+   [![Start Exercise](https://gitlab.com/ramonharrington/ai-coding-quick-start/-/raw/main/.gitlab/images/start-exercise.webp)](https://gitlab.com/ramonharrington/ai-coding-quick-start/-/forks/new)
+
 2. **Clone** your fork locally:
    ```bash
    git clone https://gitlab.com/<your-username>/<repo-name>.git
