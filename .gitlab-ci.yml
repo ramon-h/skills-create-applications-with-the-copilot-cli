@@ -1,0 +1,33 @@
+# .gitlab-ci.yml
+# GitLab CI/CD pipeline for the "Create applications with the Copilot CLI" exercise.
+#
+# PREREQUISITES (one-time setup after forking):
+#   1. Create a Project Access Token:
+#      Project → Settings → Access Tokens → name: exercise-bot, role: Reporter, scope: api
+#   2. Store it as a CI/CD variable:
+#      Project → Settings → CI/CD → Variables → key: GITLAB_TOKEN, masked: yes, protected: no
+#
+# HOW THE EXERCISE WORKS:
+#   Step 0  — Runs automatically on push to main. Creates the exercise issue.
+#   Step 1  — Run manually (CI/CD → Pipelines → Run pipeline) after creating your feature issue.
+#   Step 2  — Runs automatically when you push src/*.js to the create-calc-app branch.
+#   Step 3  — Runs automatically when you push src/tests/*.js to the create-calc-app branch.
+#   Step 4  — Runs automatically when you merge your Merge Request to main.
+
+stages:
+  - step0-start
+  - step1-validate-issue
+  - step2-validate-calculator
+  - step3-validate-tests
+  - step4-validate-pr
+
+variables:
+  # Prevent shallow clones so scripts can access file history
+  GIT_DEPTH: "0"
+
+include:
+  - local: .gitlab/ci/step-0.yml
+  - local: .gitlab/ci/step-1.yml
+  - local: .gitlab/ci/step-2.yml
+  - local: .gitlab/ci/step-3.yml
+  - local: .gitlab/ci/step-4.yml

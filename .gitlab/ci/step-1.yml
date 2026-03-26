@@ -1,0 +1,88 @@
+# Step 1 — Validate Issue Creation
+# Triggered manually by the learner after they have created their calculator feature issue.
+# The learner runs this pipeline job from CI/CD → Pipelines → Run pipeline (or via glab).
+# Validates that the issue title contains "Calculator" and has a non-trivial body.
+
+.step1-defaults: &step1-defaults
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache curl jq bash
+    - chmod +x .gitlab/ci/scripts/*.sh
+
+step1:find-exercise-issue:
+  <<: *step1-defaults
+  stage: step1-validate-issue
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "trigger"
+      when: always
+    - when: never
+  script:
+    - bash .gitlab/ci/scripts/find_exercise_issue.sh
+  artifacts:
+    reports:
+      dotenv: variables.env
+
+step1:check-issue-title:
+  <<: *step1-defaults
+  stage: step1-validate-issue
+  needs:
+    - job: step1:find-exercise-issue
+      artifacts: true
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "trigger"
+      when: always
+    - when: never
+  script:
+    - |
+      API_URL="${CI_API_V4_URL:-https://gitlab.com/api/v4}"
+      # Fetch latest calculator issue (search by "Calculator" in title)
+      CALC_ISSUE=$(curl -sf \
+        --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
+        "${API_URL}/projects/${CI_PROJECT_ID}/issues?state=opened&search=Calculator&in=title&per_page=1")
+
+      TITLE=$(echo "${CALC_ISSUE}" | jq -r '.[0].title // empty')
+      BODY=$(echo "${CALC_ISSUE}" | jq -r '.[0].description // empty')
+
+      echo "Issue title: ${TITLE}"
+
+      # Validate title contains "Calculator" (case-insensitive)
+      if echo "${TITLE}" | grep -qi "Calculator"; then
+        echo "TITLE_PASSED=true" >> check_results.env
+      else
+        echo "TITLE_PASSED=false" >> check_results.env
+      fi
+
+      # Validate body has meaningful content (>10 chars)
+      if [ ${#BODY} -gt 10 ]; then
+        echo "BODY_PASSED=true" >> check_results.env
+      else
+        echo "BODY_PASSED=false" >> check_results.env
+      fi
+  artifacts:
+    reports:
+      dotenv: check_results.env
+
+step1:post-results:
+  <<: *step1-defaults
+  stage: step1-validate-issue
+  needs:
+    - job: step1:find-exercise-issue
+      artifacts: true
+    - job: step1:check-issue-title
+      artifacts: true
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "trigger"
+      when: always
+    - when: never
+  variables:
+    STEP_2_FILE: ".gitlab/steps/2-step.md"
+  script:
+    - |
+      bash .gitlab/ci/scripts/post_step_results.sh "${ISSUE_IID}" "1" \
+        "Issue title contains 'Calculator' keyword" "${TITLE_PASSED}" \
+        "Issue has description/body content" "${BODY_PASSED}"
+    - |
+      # Only post next step content if all checks passed
+      if [ "${TITLE_PASSED}" = "true" ] && [ "${BODY_PASSED}" = "true" ]; then
+        bash .gitlab/ci/scripts/post_issue_comment.sh "${ISSUE_IID}" "${STEP_2_FILE}"
+      fi

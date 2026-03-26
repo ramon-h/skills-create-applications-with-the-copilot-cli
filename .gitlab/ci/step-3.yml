@@ -1,0 +1,82 @@
+# Step 3 — Validate Test File
+# Triggered when the learner pushes to the create-calc-app branch with changes to src/tests/*.js.
+# Validates that the test file includes tests for modulo, power, and square root.
+
+.step3-defaults: &step3-defaults
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache curl jq bash
+    - chmod +x .gitlab/ci/scripts/*.sh
+
+step3:find-exercise-issue:
+  <<: *step3-defaults
+  stage: step3-validate-tests
+  rules:
+    - if: $CI_COMMIT_BRANCH == "create-calc-app"
+      changes:
+        - src/tests/*.js
+  script:
+    - bash .gitlab/ci/scripts/find_exercise_issue.sh
+  artifacts:
+    reports:
+      dotenv: variables.env
+
+step3:check-test-file:
+  <<: *step3-defaults
+  stage: step3-validate-tests
+  needs:
+    - job: step3:find-exercise-issue
+      artifacts: true
+  rules:
+    - if: $CI_COMMIT_BRANCH == "create-calc-app"
+      changes:
+        - src/tests/*.js
+  script:
+    - |
+      # Detect test file (supports both .test.js and .tests.js)
+      if [ -f "src/tests/calculator.test.js" ]; then
+        TEST_FILE="src/tests/calculator.test.js"
+      elif [ -f "src/tests/calculator.tests.js" ]; then
+        TEST_FILE="src/tests/calculator.tests.js"
+      else
+        echo "ERROR: Expected src/tests/calculator.test.js or src/tests/calculator.tests.js"
+        echo "MODULO_PASSED=false" >> check_results.env
+        echo "POWER_PASSED=false"  >> check_results.env
+        echo "SQRT_PASSED=false"   >> check_results.env
+        exit 0
+      fi
+
+      echo "Using test file: ${TEST_FILE}"
+
+      bash .gitlab/ci/scripts/check_keyphrase.sh "${TEST_FILE}" "modulo"  && echo "MODULO_PASSED=true" >> check_results.env || echo "MODULO_PASSED=false" >> check_results.env
+      bash .gitlab/ci/scripts/check_keyphrase.sh "${TEST_FILE}" "power"   && echo "POWER_PASSED=true"  >> check_results.env || echo "POWER_PASSED=false"  >> check_results.env
+      bash .gitlab/ci/scripts/check_keyphrase.sh "${TEST_FILE}" "square"  && echo "SQRT_PASSED=true"   >> check_results.env || echo "SQRT_PASSED=false"   >> check_results.env
+  artifacts:
+    reports:
+      dotenv: check_results.env
+
+step3:post-results:
+  <<: *step3-defaults
+  stage: step3-validate-tests
+  needs:
+    - job: step3:find-exercise-issue
+      artifacts: true
+    - job: step3:check-test-file
+      artifacts: true
+  rules:
+    - if: $CI_COMMIT_BRANCH == "create-calc-app"
+      changes:
+        - src/tests/*.js
+      when: always
+  variables:
+    STEP_4_FILE: ".gitlab/steps/4-step.md"
+  script:
+    - |
+      bash .gitlab/ci/scripts/post_step_results.sh "${ISSUE_IID}" "3" \
+        "Calculator tests has 'modulo' test"      "${MODULO_PASSED}" \
+        "Calculator tests has 'power' test"       "${POWER_PASSED}" \
+        "Calculator tests has 'square root' test" "${SQRT_PASSED}"
+    - |
+      if [ "${MODULO_PASSED}" = "true" ] && [ "${POWER_PASSED}" = "true" ] && [ "${SQRT_PASSED}" = "true" ]; then
+        bash .gitlab/ci/scripts/post_issue_comment.sh "${ISSUE_IID}" "${STEP_4_FILE}"
+      fi

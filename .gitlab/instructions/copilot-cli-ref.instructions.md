@@ -9,7 +9,7 @@ Only add, commit, and push files when prompted by the user.
 
 # New features
 
-Use .github/ISSUE_TEMPLATE/feature_request.md to request all new features for calculator.js.
+Use .gitlab/issue_templates/feature_request.md to request all new features for calculator.js.
 
 # Global shortcuts
 
@@ -54,6 +54,12 @@ Respects instructions sourced from various locations:
 - `GEMINI.md`
 - `$HOME/.copilot/copilot-instructions.md`
 - Additional directories via `COPILOT_CUSTOM_INSTRUCTIONS_DIRS`
+
+> **GitLab users:** This repository stores instructions in `.gitlab/instructions/`.
+> Set the following in your shell so Copilot CLI picks them up automatically:
+> ```bash
+> export COPILOT_CUSTOM_INSTRUCTIONS_DIRS=.gitlab/instructions
+> ```
 
 ## Learn more
 

@@ -10,7 +10,7 @@ Here's a recap of your accomplishments:
 - ✅ Generate a Node.js CLI calculator app
 - ✅ Expand calculator functionality
 - ✅ Write unit tests for calculator functions
-- ✅ Create, Review, and Merge your Pull Request
+- ✅ Create, Review, and Merge your Merge Request
 
 ### Explore More Copilot CLI Features
 
@@ -26,7 +26,7 @@ Now that you've learned the basics, explore these additional capabilities:
 
 **Advanced Features:**
 
-- **Custom agents**: Create specialized agent personas in `.github/agents/` for domain-specific workflows
+- **Custom agents**: Create specialized agent personas in `.gitlab/agents/` for domain-specific workflows
 - **`/delegate` command**: Assign tasks to Copilot coding agent for autonomous work
 - **MCP server support**: Integrate with Model Context Protocol tools for extended functionality
 
@@ -35,5 +35,5 @@ Now that you've learned the basics, explore these additional capabilities:
 - [GitHub Copilot Documentation](https://docs.github.com/en/copilot) - Learn more about all Copilot features
 - [Using the Copilot CLI](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/use-copilot-cli) - Official Copilot CLI guide
 - [Copilot CLI 101](https://github.blog/ai-and-ml/github-copilot-cli-101-how-to-use-github-copilot-from-the-command-line/) - Comprehensive tutorial
-- [More GitHub Skills](https://learn.github.com/skills) - Continue learning with other exercises
-- Try using Copilot CLI in your own projects to boost productivity!
+- [glab CLI Documentation](https://gitlab.com/gitlab-org/cli/-/tree/main/docs) - GitLab CLI reference
+- Try using Copilot CLI in your own GitLab projects to boost productivity!

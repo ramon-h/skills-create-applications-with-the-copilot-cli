@@ -18,7 +18,7 @@ The standalone Copilot CLI (`copilot` command) provides a rich interactive exper
 
 Copilot CLI supports custom agents that you can define in your repository:
 
-- Create agent profiles in `.github/agents/` directory
+- Create agent profiles in `.gitlab/agents/` directory
 - Encode specialized prompts, tool selections, and workflows
 - Invoke agents using `/agent <name>` command
 - Great for documentation, infrastructure, security, or domain-specific tasks
@@ -40,7 +40,7 @@ When you have larger tasks, you can delegate them to Copilot coding agent:
 > - [About custom agents](https://docs.github.com/en/copilot/concepts/agents/coding-agent/about-custom-agents)
 
 > [!IMPORTANT]
-> If you have restarted your codespace you may need to run `copilot --allow-all --enable-all-github-mcp-tools` and then authenticate with GitHub again by running `!gh auth login` in the Copilot CLI.
+> If you have restarted your terminal you may need to run `copilot --allow-all --enable-all-github-mcp-tools` and then authenticate with GitLab again by running `!glab auth login` in the Copilot CLI.
 
 ### ⌨️ Activity: Create a New Branch for the Calculator App
 
@@ -53,10 +53,7 @@ When you have larger tasks, you can delegate them to Copilot coding agent:
    > ```
 
 > [!NOTE]
-> The `--allow-all` option in the Copilot CLI enables all permissions at once:
-> it is equivalent to `--allow-all-tools`, `--allow-all-paths`, and `--allow-all-urls`.
-> This allows the CLI to access any file path, use any tool, and access any URL without prompting for confirmation.
-> Use with caution, as it grants the CLI full access and automation capabilities.
+> The `--allow-all` option enables all permissions at once: it is equivalent to `--allow-all-tools`, `--allow-all-paths`, and `--allow-all-urls`. Use with caution, as it grants the CLI full access and automation capabilities.
 
 2. Create and push a new branch called `create-calc-app`:
 
@@ -69,7 +66,7 @@ When you have larger tasks, you can delegate them to Copilot coding agent:
 <details>
 <summary>Having trouble? 🤷</summary><br/>
 
-Use the `!` command in Copilot CLI to execute shell commands directly from your chat session. For example, to create and push the branch without leaving chat:
+Use the `!` command in Copilot CLI to execute shell commands directly from your chat session:
 
  ```prompt
  !git checkout -b create-calc-app && git push -u origin create-calc-app
@@ -84,7 +81,7 @@ Use the `!` command in Copilot CLI to execute shell commands directly from your 
 
 ### ⌨️ Activity: Generate Calculator Code with Copilot CLI based on an Image
 
-1. Ask Copilot CLI to help you create the calculator functions based on the image and the GitHub issue created earlier:
+1. Ask Copilot CLI to help you create the calculator functions based on the image and the GitLab issue created earlier:
 
    > ![Static Badge](https://img.shields.io/badge/CLI-Prompt-text?style=flat-square&logo=github-copilot&labelColor=8250df&color=fbefff)
    >
@@ -96,7 +93,7 @@ Use the `!` command in Copilot CLI to execute shell commands directly from your 
    > Make sure the calculator is commented with the operations it supports.
    > ```
 
-   1. Optional alternatively, use the headless mode with a prompt:
+   1. Optional: use headless mode with a prompt:
 
       > ![Static Badge](https://img.shields.io/badge/Terminal-text?logo=gnometerminal&labelColor=0969da&color=ddf4ff)
       >
@@ -149,20 +146,20 @@ Use the `!` command in Copilot CLI to execute shell commands directly from your 
    > Push the changes
    > ```
 
-5. Wait a moment for Mona to check your work, provide feedback, and share the next lesson.
+5. The GitLab CI pipeline will automatically validate your work once you push. Watch for the pipeline to complete in **CI/CD → Pipelines**, then check the comments on your exercise issue for feedback and the next step.
 
 > [!TIP]
 > You can paste or drag-and-drop images into Copilot CLI to provide visual context for your questions!
 
 > [!NOTE]
-> Pushing your changes will trigger the workflow to verify your work and prepare the next step!
+> Pushing `src/*.js` changes to the `create-calc-app` branch triggers the Step 2 validation pipeline automatically!
 
 <details>
 <summary>Having trouble? 🤷</summary><br/>
 
 - Make sure you're in the repository directory when running commands
 - The `copilot` command requires Node.js 22+ to be installed
-- If authentication fails, run `copilot` and follow the login prompts
+- If authentication fails, run `!glab auth login` from within the Copilot CLI session
 - You can also edit the calculator.js file manually based on Copilot's suggestions
 - Remember to export your functions using `module.exports`
 

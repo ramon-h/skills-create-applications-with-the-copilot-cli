@@ -17,7 +17,7 @@ The standalone Copilot CLI helps maintain development momentum by:
 
 #### Delegating Larger Tasks
 
-For more complex tasks, you can use the `/delegate` command exampled below to assign work to the Copilot coding agent:
+For more complex tasks, you can use the `/delegate` command to assign work to the Copilot coding agent:
 
 > ```bash
 > copilot
@@ -49,13 +49,7 @@ As you add features, Copilot CLI can help you:
 - Save and share your development sessions using `/share`
 
 > [!IMPORTANT]
-> If you have restarted your codespace you may need to run `copilot --allow-all --enable-all-github-mcp-tools` and then authenticate with GitHub again by running `!gh auth login` from within the Copilot CLI session.
-
-> [!NOTE]
-> The `--allow-all` option in the Copilot CLI enables all permissions at once:
-> it is equivalent to `--allow-all-tools`, `--allow-all-paths`, and `--allow-all-urls`.
-> This allows the CLI to access any file path, use any tool, and access any URL without prompting for confirmation.
-> Use with caution, as it grants the CLI full access and automation capabilities.
+> If you have restarted your terminal you may need to run `copilot --allow-all --enable-all-github-mcp-tools` and then authenticate with GitLab again by running `!glab auth login` from within the Copilot CLI session.
 
 ### ⌨️ Activity: Add More Operations to the Calculator
 
@@ -67,18 +61,19 @@ As you add features, Copilot CLI can help you:
    > copilot --allow-all --enable-all-github-mcp-tools
    > ```
 
-1. Ask Copilot CLI to help you create another issue for expanding the calculator:
+1. Ask Copilot CLI to help you create another issue for expanding the calculator using `glab`:
 
    > ![Static Badge](https://img.shields.io/badge/CLI-Prompt-text?style=flat-square&logo=github-copilot&labelColor=8250df&color=fbefff)
    >
    > ```prompt
-   > Create a GitHub issue for a Node.js CLI calculator app using the feature_request.md template 
+   > Create a GitLab issue for a Node.js CLI calculator app using the feature_request.md template 
    > as the markdown format.
    > I want to request a feature to add more operations including 
    > - modulo
    > - exponentiation (power)
    > - square root
-   > Create the issue directly for the current owner and repository in this session on github.com using the `gh` CLI commands.
+   > Create the issue directly for the current owner and repository in this session on gitlab.com
+   > using the `glab` CLI commands.
    > List the issue link when complete
    > ```
 
@@ -93,11 +88,11 @@ As you add features, Copilot CLI can help you:
    > 3. squareRoot(n) - returns the square root of n with error handling for negative numbers
    > ```
 
-   1. Optional alternatively, use the headless mode:
+   1. Optional: use headless mode:
 
-      > ![Static Badge](https://img.shields.io/badge/CLI-Prompt-text?style=flat-square&logo=github-copilot&labelColor=8250df&color=fbefff)
+      > ![Static Badge](https://img.shields.io/badge/Terminal-text?logo=gnometerminal&labelColor=0969da&color=ddf4ff)
       >
-      > ```prompt
+      > ```bash
       > copilot -p "Add these functions to my existing calculator.js based on latest issue created:
       > 1. modulo(a, b) - returns the remainder of a divided by b
       > 2. power(base, exponent) - returns base raised to the exponent
@@ -129,10 +124,10 @@ As you add features, Copilot CLI can help you:
    > Push the changes
    > ```
 
-1. Wait a moment for Mona to check your work, provide feedback, and share the next lesson.
+1. The GitLab CI pipeline will automatically validate your work. Watch **CI/CD → Pipelines** for the Step 3 pipeline to complete, then check your exercise issue comments for feedback.
 
 > [!TIP]
-> Use `/share gist` in your Copilot CLI session to save your GitHub Skills exercise session as a GitHub gist for future reference!
+> Use `/share gist` in your Copilot CLI session to save your exercise session as a GitHub gist for future reference!
 
 <details>
 <summary>Having trouble? 🤷</summary><br/>
